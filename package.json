@@ -5,7 +5,6 @@
     "dev": "pnpm db:generate && pnpm --filter @hublens/web dev",
     "build": "pnpm --filter @hublens/web build",
     "start": "pnpm --filter @hublens/web start",
-    "setup:db": "powershell -ExecutionPolicy Bypass -File scripts/setup-local-db.ps1",
     "db:generate": "pnpm --filter @hublens/db generate",
     "db:migrate": "pnpm --filter @hublens/db migrate",
     "db:push": "pnpm --filter @hublens/db push",
