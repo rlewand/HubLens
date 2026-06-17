@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+packages/db/prisma/migrations/**/migration_lock.toml
+
+# Uploads (local dev — Next.js cwd is apps/web)
+apps/web/.uploads/
+.uploads/
+
+# Sample data (large CSV exports — keep local only)
+Input/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*

@@ -1,0 +1,319 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ImportStatus {
+  pending
+  processing
+  completed
+  failed
+}
+
+model User {
+  id             String   @id @default(cuid())
+  autodeskUserId String   @unique @map("autodesk_user_id")
+  email          String?
+  name           String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  importBatches ImportBatch[]
+  savedFilters  SavedFilter[]
+  projectNotes  ProjectNote[]
+  migrationSelections ProjectMigrationSelection[]
+
+  @@map("users")
+}
+
+model ImportBatch {
+  id           String       @id @default(cuid())
+  userId       String       @map("user_id")
+  accountId    String?      @map("account_id")
+  accountName  String?      @map("account_name")
+  status       ImportStatus @default(pending)
+  fileCount    Int          @default(0) @map("file_count")
+  projectCount Int          @default(0) @map("project_count")
+  metadataJson Json?        @map("metadata_json")
+  errorMessage String?      @map("error_message")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  completedAt  DateTime?    @map("completed_at")
+
+  user           User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects       Project[]
+  maturityScores ProjectMaturityScore[]
+  moduleEvidence ModuleEvidence[]
+  projectServices ProjectService[]
+  projectProducts ProjectProduct[]
+  docsScans       DocsInventoryScan[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("import_batches")
+}
+
+model Project {
+  id                String
+  batchId           String    @map("batch_id")
+  accountId         String    @map("account_id")
+  name              String
+  status            String?
+  jobNumber         String?   @map("job_number")
+  projectType       String?   @map("project_type")
+  classification    String?
+  country           String?
+  businessUnitId    String?   @map("business_unit_id")
+  businessUnitName  String?   @map("business_unit_name")
+  accProject        Boolean   @default(false) @map("acc_project")
+  totalMemberSize   Int?      @map("total_member_size")
+  totalCompanySize  Int?      @map("total_company_size")
+  lastSignIn        DateTime? @map("last_sign_in")
+  startDate         DateTime? @map("start_date")
+  endDate           DateTime? @map("end_date")
+  createdAt         DateTime? @map("created_at")
+  updatedAt         DateTime? @map("updated_at")
+  overallMaturity   Float?    @map("overall_maturity")
+  lastActivityAt    DateTime? @map("last_activity_at")
+
+  batch          ImportBatch            @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  maturityScores ProjectMaturityScore[]
+  moduleEvidence ModuleEvidence[]
+  services       ProjectService[]
+  products       ProjectProduct[]
+  notes          ProjectNote[]
+  docsScan       DocsInventoryScan?
+  admins         ProjectAdmin[]
+  migrationSelections ProjectMigrationSelection[]
+
+  @@id([batchId, id])
+  @@index([batchId, status])
+  @@index([batchId, name])
+  @@index([batchId, accProject])
+  @@index([batchId, startDate])
+  @@index([batchId, endDate])
+  @@map("projects")
+}
+
+model ProjectService {
+  id        String   @id @default(cuid())
+  batchId   String   @map("batch_id")
+  projectId String   @map("project_id")
+  service   String
+  status    String
+  createdAt DateTime? @map("created_at")
+
+  batch   ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  project Project     @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+
+  @@unique([batchId, projectId, service])
+  @@index([batchId, projectId])
+  @@map("project_services")
+}
+
+model ProjectProduct {
+  id         String    @id @default(cuid())
+  batchId    String    @map("batch_id")
+  projectId  String    @map("project_id")
+  productKey String    @map("product_key")
+  status     String
+  createdAt  DateTime? @map("created_at")
+
+  batch   ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  project Project     @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+
+  @@unique([batchId, projectId, productKey])
+  @@index([batchId, projectId])
+  @@map("project_products")
+}
+
+model ModuleEvidence {
+  id             String    @id @default(cuid())
+  batchId        String    @map("batch_id")
+  projectId      String    @map("project_id")
+  moduleKey      String    @map("module_key")
+  tableKey       String    @map("table_key")
+  recordCount    Int       @default(0) @map("record_count")
+  distinctUsers  Int       @default(0) @map("distinct_users")
+  lastActivityAt DateTime? @map("last_activity_at")
+
+  batch   ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  project Project     @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+
+  @@unique([batchId, projectId, moduleKey, tableKey])
+  @@index([batchId, projectId])
+  @@index([batchId, moduleKey])
+  @@map("module_evidence")
+}
+
+model ProjectMaturityScore {
+  id          String   @id @default(cuid())
+  batchId     String   @map("batch_id")
+  projectId   String   @map("project_id")
+  moduleKey   String   @map("module_key")
+  level       Int
+  enabled     Boolean  @default(false)
+  metricsJson Json     @map("metrics_json")
+  computedAt  DateTime @default(now()) @map("computed_at")
+
+  batch   ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  project Project     @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+
+  @@unique([batchId, projectId, moduleKey])
+  @@index([batchId, moduleKey, level])
+  @@map("project_maturity_scores")
+}
+
+model SavedFilter {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  name       String
+  filterJson Json     @map("filter_json")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("saved_filters")
+}
+
+model ProjectNote {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  projectId String   @map("project_id")
+  batchId   String   @map("batch_id")
+  note      String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+
+  @@unique([userId, batchId, projectId])
+  @@map("project_notes")
+}
+
+model DocsInventoryScan {
+  batchId       String    @map("batch_id")
+  projectId     String    @map("project_id")
+  status        String    @default("pending")
+  folderCount   Int       @default(0) @map("folder_count")
+  fileCount     Int       @default(0) @map("file_count")
+  versionCount  Int       @default(0) @map("version_count")
+  formatSummary Json?     @map("format_summary")
+  scannedAt     DateTime? @map("scanned_at")
+  errorMessage  String?   @map("error_message")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  batch   ImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  project Project     @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+  folders DocsFolder[]
+  files   DocsFile[]
+
+  @@id([batchId, projectId])
+  @@index([batchId, status])
+  @@map("docs_inventory_scans")
+}
+
+model DocsFolder {
+  id              String    @id @default(cuid())
+  batchId         String    @map("batch_id")
+  projectId       String    @map("project_id")
+  folderUrn       String    @map("folder_urn")
+  parentFolderUrn String?   @map("parent_folder_urn")
+  name            String
+  isTopFolder     Boolean   @default(false) @map("is_top_folder")
+  objectCount     Int?      @map("object_count")
+  hidden          Boolean   @default(false)
+  createdAt       DateTime? @map("created_at")
+  lastModifiedAt  DateTime? @map("last_modified_at")
+
+  scan    DocsInventoryScan @relation(fields: [batchId, projectId], references: [batchId, projectId], onDelete: Cascade)
+
+  @@unique([batchId, projectId, folderUrn])
+  @@index([batchId, projectId])
+  @@map("docs_folders")
+}
+
+model DocsFile {
+  id               String    @id @default(cuid())
+  batchId          String    @map("batch_id")
+  projectId        String    @map("project_id")
+  itemUrn          String    @map("item_urn")
+  folderUrn        String?   @map("folder_urn")
+  displayName      String    @map("display_name")
+  fileType         String?   @map("file_type")
+  extension        String?
+  mimeType         String?   @map("mime_type")
+  versionCount     Int       @default(0) @map("version_count")
+  tipVersionNumber Int?      @map("tip_version_number")
+  tipVersionUrn    String?   @map("tip_version_urn")
+  storageSize      BigInt?   @map("storage_size")
+  createdAt        DateTime? @map("created_at")
+  lastModifiedAt   DateTime? @map("last_modified_at")
+
+  scan     DocsInventoryScan @relation(fields: [batchId, projectId], references: [batchId, projectId], onDelete: Cascade)
+  versions DocsFileVersion[]
+
+  @@unique([batchId, projectId, itemUrn])
+  @@index([batchId, projectId, extension])
+  @@index([batchId, projectId, fileType])
+  @@map("docs_files")
+}
+
+model DocsFileVersion {
+  id             String    @id @default(cuid())
+  batchId        String    @map("batch_id")
+  projectId      String    @map("project_id")
+  itemUrn        String    @map("item_urn")
+  versionUrn     String    @map("version_urn")
+  versionNumber  Int?      @map("version_number")
+  displayName    String?   @map("display_name")
+  fileType       String?   @map("file_type")
+  extension      String?
+  mimeType       String?   @map("mime_type")
+  storageSize    BigInt?   @map("storage_size")
+  isTip          Boolean   @default(false) @map("is_tip")
+  createdAt      DateTime? @map("created_at")
+  lastModifiedAt DateTime? @map("last_modified_at")
+
+  file DocsFile @relation(fields: [batchId, projectId, itemUrn], references: [batchId, projectId, itemUrn], onDelete: Cascade)
+
+  @@unique([batchId, projectId, versionUrn])
+  @@index([batchId, projectId, itemUrn])
+  @@map("docs_file_versions")
+}
+
+model ProjectAdmin {
+  id        String  @id @default(cuid())
+  batchId   String  @map("batch_id")
+  projectId String  @map("project_id")
+  userId    String  @map("user_id")
+  name      String?
+  email     String?
+
+  project Project @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+
+  @@unique([batchId, projectId, userId])
+  @@index([batchId, projectId])
+  @@map("project_admins")
+}
+
+model ProjectMigrationSelection {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  batchId   String   @map("batch_id")
+  projectId String   @map("project_id")
+  syncDocs  Boolean  @default(false) @map("sync_docs")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [batchId, projectId], references: [batchId, id], onDelete: Cascade)
+
+  @@unique([userId, batchId, projectId])
+  @@index([userId, batchId])
+  @@map("project_migration_selections")
+}

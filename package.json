@@ -1,0 +1,21 @@
+{
+  "name": "hublens",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm db:generate && pnpm --filter @hublens/web dev",
+    "build": "pnpm --filter @hublens/web build",
+    "start": "pnpm --filter @hublens/web start",
+    "setup:db": "powershell -ExecutionPolicy Bypass -File scripts/setup-local-db.ps1",
+    "db:generate": "pnpm --filter @hublens/db generate",
+    "db:migrate": "pnpm --filter @hublens/db migrate",
+    "db:push": "pnpm --filter @hublens/db push",
+    "db:studio": "pnpm --filter @hublens/db studio",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

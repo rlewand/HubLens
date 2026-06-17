@@ -1,0 +1,126 @@
+# ACC feature items for per-project drill-down (beyond module-level maturity).
+features:
+  issues:
+    display_name: Issues
+    description: Design and field issue tracking (ACC + BIM 360)
+    module: build
+    enabled_from: [projectManagement, build]
+    evidence_tables:
+      - issues_issues          # ACC projects (acc_project = true)
+      - issuesbim360_issues    # BIM 360 projects (acc_project = false)
+    related_tables:
+      - issues_comments
+      - issues_attachments
+      - issuesbim360_comments
+      - issuesbim360_attachments
+
+  reviews:
+    display_name: Reviews
+    description: Document review workflows
+    module: docs
+    enabled_from: [documentManagement, docs]
+    evidence_table: reviews_reviews
+    related_tables:
+      - reviews_review_tasks
+      - reviews_review_documents
+
+  checklists:
+    display_name: Checklists
+    description: Quality and safety checklists
+    module: field
+    enabled_from: [fieldManagement, field, build]
+    evidence_table: checklists_checklists
+    related_tables:
+      - checklists_checklist_items
+      - checklists_templates
+
+  assets:
+    display_name: Assets
+    description: Asset tracking and lifecycle
+    module: assets
+    enabled_from: [assets]
+    evidence_table: assets_assets
+    related_tables:
+      - assets_categories
+      - assets_systems
+
+  rfis:
+    display_name: RFIs
+    description: Requests for information
+    module: build
+    enabled_from: [projectManagement, build]
+    evidence_table: rfis_rfis
+
+  submittals:
+    display_name: Submittals
+    description: Submittal workflows
+    module: build
+    enabled_from: [projectManagement, build]
+    evidence_table: submittalsacc_items
+
+  forms:
+    display_name: Forms
+    description: Field forms and reports
+    module: field
+    enabled_from: [fieldManagement, field]
+    evidence_table: forms_forms
+
+  sheets:
+    display_name: Sheets
+    description: Drawing sheets
+    module: docs
+    enabled_from: [documentManagement, docs]
+    evidence_table: sheets_sheets
+
+  transmittals:
+    display_name: Transmittals
+    description: Workflow transmittals
+    module: docs
+    enabled_from: [documentManagement, docs]
+    evidence_table: transmittals_workflow_transmittals
+
+  clashes:
+    display_name: Clashes
+    description: Clash detection and assignment
+    module: design_collaboration
+    enabled_from: [designCollaboration, modelCoordination]
+    evidence_tables:
+      - clashes_assigned_clash_group
+      - clashes_clash_test
+
+  takeoff:
+    display_name: Takeoff
+    description: Quantification and takeoff packages
+    module: takeoff
+    enabled_from: [quantification, takeoff]
+    evidence_tables:
+      - takeoff_takeoff_items
+      - takeoff_packages
+
+  cost:
+    display_name: Cost
+    description: Budget and cost data
+    module: cost
+    enabled_from: [costManagement, cost]
+    evidence_table: cost_budgets
+
+  docs_folders:
+    display_name: Folders
+    description: Distinct folder paths (APS Data Management API or packages export)
+    module: docs
+    enabled_from: [documentManagement, docs]
+    evidence_table: docs_content_folders
+
+  docs_files:
+    display_name: Files
+    description: Distinct file lineages (APS Data Management API or packages export)
+    module: docs
+    enabled_from: [documentManagement, docs]
+    evidence_table: docs_content_files
+
+  docs_versions:
+    display_name: Versions
+    description: File version records (APS Data Management API or packages export)
+    module: docs
+    enabled_from: [documentManagement, docs]
+    evidence_table: docs_content_versions
