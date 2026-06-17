@@ -7,6 +7,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
+const DB_USER = "hublens";
+const DB_PASSWORD = "hublens";
+const DB_NAME = "hublens";
+const DB_SCHEMA = "hublens";
 
 function log(message) {
   console.log(`\n> ${message}`);
@@ -59,15 +63,35 @@ function ensurePnpm() {
   run("corepack", ["prepare", "pnpm@9.15.0", "--activate"]);
 }
 
-function ensureDocker() {
-  if (!commandExists("docker")) {
-    fail("Docker is required. Install Docker Desktop and try again.");
+function findPsql() {
+  if (commandExists("psql")) {
+    return "psql";
   }
 
-  const info = spawnSync("docker", ["info"], { shell: true, stdio: "ignore" });
-  if (info.status !== 0) {
-    fail("Docker is installed but not running. Start Docker Desktop and try again.");
+  if (process.platform === "win32") {
+    for (const version of [17, 16, 15]) {
+      const candidate = `C:\\Program Files\\PostgreSQL\\${version}\\bin\\psql.exe`;
+      if (existsSync(candidate)) {
+        return candidate;
+      }
+    }
   }
+
+  fail(
+    "PostgreSQL client (psql) not found. Install PostgreSQL 16 and ensure psql is on your PATH.",
+  );
+}
+
+function runPsql(psql, { user, password, database, sql }) {
+  return spawnSync(
+    psql,
+    ["-U", user, "-h", "localhost", "-p", "5432", "-d", database, "-v", "ON_ERROR_STOP=1", "-c", sql],
+    {
+      env: { ...process.env, PGPASSWORD: password },
+      stdio: "pipe",
+      encoding: "utf8",
+    },
+  );
 }
 
 function setupEnvFiles() {
@@ -100,15 +124,16 @@ function setupEnvFiles() {
   }
 }
 
-async function waitForPostgres() {
-  log("Waiting for PostgreSQL…");
+async function waitForPostgresService(psql, superPassword) {
+  log("Waiting for PostgreSQL on localhost:5432…");
 
   for (let attempt = 1; attempt <= 30; attempt += 1) {
-    const result = spawnSync(
-      "docker",
-      ["compose", "exec", "-T", "postgres", "pg_isready", "-U", "hublens", "-d", "hublens"],
-      { cwd: root, shell: true, stdio: "ignore" },
-    );
+    const result = runPsql(psql, {
+      user: "postgres",
+      password: superPassword,
+      database: "postgres",
+      sql: "SELECT 1",
+    });
 
     if (result.status === 0) {
       return;
@@ -117,24 +142,95 @@ async function waitForPostgres() {
     await sleep(2000);
   }
 
-  fail("PostgreSQL did not become ready. Check Docker logs with: docker compose logs postgres");
+  fail(
+    "PostgreSQL is not running on localhost:5432. Start the PostgreSQL service and run install again.",
+  );
+}
+
+function setupDatabase(psql) {
+  const hubLensReady = runPsql(psql, {
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+    sql: "SELECT 1",
+  });
+
+  if (hubLensReady.status === 0) {
+    log("PostgreSQL already configured for HubLens");
+    return;
+  }
+
+  const superPassword = process.env.POSTGRES_SUPER_PASSWORD ?? "password";
+  log("Creating HubLens database user and schema…");
+
+  const createRole = runPsql(psql, {
+    user: "postgres",
+    password: superPassword,
+    database: "postgres",
+    sql: `
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${DB_USER}') THEN
+    CREATE ROLE ${DB_USER} LOGIN PASSWORD '${DB_PASSWORD}';
+  END IF;
+END $$;`,
+  });
+
+  if (createRole.status !== 0) {
+    fail(
+      "Could not create the hublens database user. Set POSTGRES_SUPER_PASSWORD to your postgres superuser password and try again.",
+    );
+  }
+
+  const dbExists = runPsql(psql, {
+    user: "postgres",
+    password: superPassword,
+    database: "postgres",
+    sql: `SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}'`,
+  });
+
+  if (!dbExists.stdout.includes("1")) {
+    const createDb = runPsql(psql, {
+      user: "postgres",
+      password: superPassword,
+      database: "postgres",
+      sql: `CREATE DATABASE ${DB_NAME} OWNER ${DB_USER};`,
+    });
+
+    if (createDb.status !== 0) {
+      fail("Could not create the hublens database.");
+    }
+  }
+
+  const createSchema = runPsql(psql, {
+    user: "postgres",
+    password: superPassword,
+    database: DB_NAME,
+    sql: `
+CREATE SCHEMA IF NOT EXISTS ${DB_SCHEMA} AUTHORIZATION ${DB_USER};
+GRANT ALL ON SCHEMA ${DB_SCHEMA} TO ${DB_USER};`,
+  });
+
+  if (createSchema.status !== 0) {
+    fail("Could not create the hublens schema.");
+  }
 }
 
 async function main() {
   console.log("HubLens installer");
 
   checkNodeVersion();
-  ensureDocker();
   ensurePnpm();
   setupEnvFiles();
 
+  const psql = findPsql();
+  const superPassword = process.env.POSTGRES_SUPER_PASSWORD ?? "password";
+
+  await waitForPostgresService(psql, superPassword);
+  setupDatabase(psql);
+
   log("Installing dependencies…");
   run("pnpm", ["install"]);
-
-  log("Starting PostgreSQL…");
-  run("docker", ["compose", "up", "-d"]);
-
-  await waitForPostgres();
 
   log("Applying database schema…");
   run("pnpm", ["db:push"]);
