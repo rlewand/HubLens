@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <RootNamespace>HubLens.Web</RootNamespace>
-    <AssemblyName>HubLens</AssemblyName>
-    <OutputType>Exe</OutputType>
+    <AssemblyName>HubLens.Web</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\HubLens.Core\HubLens.Core.csproj" />

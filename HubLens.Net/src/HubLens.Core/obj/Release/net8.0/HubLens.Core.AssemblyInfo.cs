@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HubLens.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+46ad819638acee17ea53a207a8eed0cd5bd3d6d9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f5861f1cee4e045ade0adb846a3cc3fc48008b89")]
 [assembly: System.Reflection.AssemblyProductAttribute("HubLens.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HubLens.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

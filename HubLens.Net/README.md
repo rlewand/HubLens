@@ -1,53 +1,78 @@
 # HubLens (.NET)
 
-Native **.NET 8** rewrite of HubLens — a local ACC/BIM 360 maturity dashboard with a single executable, embedded **SQLite** database, and no Node.js or PostgreSQL dependency.
+Installable **Windows desktop app** for ACC/BIM 360 project maturity analysis. Built with **.NET 8**, **WPF + WebView2**, embedded **SQLite**, and no Node.js or PostgreSQL dependency.
 
-## Architecture
+## Desktop app
 
 | Project | Role |
 |---------|------|
-| `HubLens.Core` | Maturity scoring engine, ACC CSV conventions, shared parsers |
-| `HubLens.Data` | EF Core + SQLite entities |
-| `HubLens.Ingest` | ZIP extraction, streaming CSV import, batch scoring |
-| `HubLens.Web` | Blazor Server UI (dashboard, upload, project detail) |
+| `HubLens.Desktop` | WPF shell with WebView2 — the installable desktop app |
+| `HubLens.Web` | Blazor Server UI and API host (runs inside the desktop shell) |
+| `HubLens.Core` | Maturity scoring engine and ACC CSV conventions |
+| `HubLens.Data` | EF Core + SQLite |
+| `HubLens.Ingest` | ZIP extraction and streaming CSV import |
 
-Data is stored in:
+User data is stored in:
 
 `%LOCALAPPDATA%\HubLens\hublens.db`
 
-The app listens on **http://127.0.0.1:5050**.
-
 ## Requirements
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- Windows 10/11 (64-bit)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) — for development/build only
+- [WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) — usually already installed on Windows 11
 
-## Run locally
+## Run during development
 
 ```powershell
 cd HubLens.Net
-dotnet restore
+dotnet run --project src/HubLens.Desktop
+```
+
+This opens a native HubLens window (no browser tab needed).
+
+You can also run the web host only:
+
+```powershell
 dotnet run --project src/HubLens.Web
 ```
 
 Open http://127.0.0.1:5050
 
-## Publish a standalone EXE
+## Build an installable setup
+
+### 1. Publish the desktop app
 
 ```powershell
 cd HubLens.Net
-dotnet publish src/HubLens.Web -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+.\installer\build-installer.ps1
 ```
 
-Run:
+This publishes a self-contained app to `dist/app/`.
+
+### 2. Create the installer (optional)
+
+Install [Inno Setup 6](https://jrsoftware.org/isinfo.php), then run `build-installer.ps1` again. It produces:
+
+`dist/installer/HubLens-Setup-1.0.0.exe`
+
+That setup wizard:
+
+- Installs HubLens to `Program Files\HubLens`
+- Adds Start Menu shortcut
+- Optionally adds a desktop shortcut
+- Registers an uninstaller
+
+### Manual publish (without installer)
 
 ```powershell
-./publish/HubLens.exe
+dotnet publish src/HubLens.Desktop -c Release -r win-x64 --self-contained true -o ./dist/app
+./dist/app/HubLens.exe
 ```
-
-This produces a single-folder deployment suitable for wrapping in an **MSI** (WiX, Inno Setup, or MSIX Packaging Tool).
 
 ## What is implemented
 
+- Native desktop window with embedded UI
 - ZIP upload ingest with streaming CSV support (50 MB+ files)
 - Project, service, product, and evidence import
 - 8-module maturity scoring from `config/maturity-rules.yaml`
@@ -55,7 +80,7 @@ This produces a single-folder deployment suitable for wrapping in an **MSI** (Wi
 - Project detail with scores, services, and evidence tables
 - Automatic SQLite database creation on first run
 
-## Planned next (from Node version)
+## Planned next
 
 - Migration portfolio with effort estimates and date filters
 - APS OAuth authentication
@@ -64,10 +89,6 @@ This produces a single-folder deployment suitable for wrapping in an **MSI** (Wi
 
 ## Relationship to the Node.js version
 
-The original app lives in `apps/web` (Next.js + PostgreSQL). This .NET version is a **parallel rewrite** focused on:
-
-- Single EXE / MSI deployment
-- No external database install
-- Native Autodesk/.NET stack alignment
+The original app lives in `apps/web` (Next.js + PostgreSQL). This .NET desktop version is the path to a **single installable EXE** for consultants.
 
 Both versions share the same `config/maturity-rules.yaml` rules file.

@@ -1,27 +1,27 @@
 {
   "Version": 1,
-  "Hash": "VhfXw0xphAXcTAFSaOcZ8mPpIfKxLtqfFG76YuZUXq0=",
-  "Source": "HubLens",
-  "BasePath": "_content/HubLens",
+  "Hash": "222mG+zi3zapyU7NnCgFbmjYqVvZFB/gmLh8FREN11U=",
+  "Source": "HubLens.Web",
+  "BasePath": "_content/HubLens.Web",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [
     {
-      "Name": "HubLens\\wwwroot",
-      "Source": "HubLens",
+      "Name": "HubLens.Web\\wwwroot",
+      "Source": "HubLens.Web",
       "ContentRoot": "C:\\Cursor\\HubLens\\HubLens.Net\\src\\HubLens.Web\\wwwroot\\",
-      "BasePath": "_content/HubLens",
+      "BasePath": "_content/HubLens.Web",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
       "Identity": "C:\\Cursor\\HubLens\\HubLens.Net\\src\\HubLens.Web\\wwwroot\\app.css",
-      "SourceId": "HubLens",
+      "SourceId": "HubLens.Web",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Cursor\\HubLens\\HubLens.Net\\src\\HubLens.Web\\wwwroot\\",
-      "BasePath": "_content/HubLens",
+      "BasePath": "_content/HubLens.Web",
       "RelativePath": "app.css",
       "AssetKind": "All",
       "AssetMode": "All",

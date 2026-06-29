@@ -5,20 +5,20 @@
       "PackagePath": "staticwebassets\\app.css"
     },
     {
-      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.HubLens.Microsoft.AspNetCore.StaticWebAssets.props",
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.HubLens.Web.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
     {
-      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.HubLens.props",
-      "PackagePath": "build\\HubLens.props"
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.HubLens.Web.props",
+      "PackagePath": "build\\HubLens.Web.props"
     },
     {
-      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.HubLens.props",
-      "PackagePath": "buildMultiTargeting\\HubLens.props"
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.HubLens.Web.props",
+      "PackagePath": "buildMultiTargeting\\HubLens.Web.props"
     },
     {
-      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.HubLens.props",
-      "PackagePath": "buildTransitive\\HubLens.props"
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.HubLens.Web.props",
+      "PackagePath": "buildTransitive\\HubLens.Web.props"
     }
   ],
   "ElementsToRemove": []
