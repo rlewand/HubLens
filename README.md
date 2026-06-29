@@ -6,6 +6,8 @@ HubLens helps Professional Services consultants analyze account health across hu
 
 Built as a local-first web application today, with a path to internal deployment and Autodesk Platform Services (APS) authentication.
 
+A native **.NET 8 rewrite** for single-EXE / MSI deployment lives in [`HubLens.Net/`](./HubLens.Net/) (SQLite, no Node.js or PostgreSQL). See [`HubLens.Net/README.md`](./HubLens.Net/README.md).
+
 ---
 
 ## What HubLens does

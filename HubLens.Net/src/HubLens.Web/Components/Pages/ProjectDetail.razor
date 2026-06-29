@@ -1,0 +1,104 @@
+@page "/projects/{ProjectId}"
+@rendermode InteractiveServer
+@inject DashboardService Dashboard
+@inject UserSession Session
+@inject NavigationManager Navigation
+
+<PageTitle>Project - HubLens</PageTitle>
+
+@if (detail is null)
+{
+    <div class="card">Project not found.</div>
+}
+else
+{
+    <div class="page-header">
+        <p><a href="/">← Back to dashboard</a></p>
+        <h1>@detail.Project.Name</h1>
+        <p>
+            @(detail.Project.JobNumber ?? "No job number") · @(detail.Project.Status ?? "unknown")
+            · @FormatDate(detail.Project.StartDate) – @FormatDate(detail.Project.EndDate)
+        </p>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <h3>Summary</h3>
+            <ul class="metric-list">
+                <li><span>Overall maturity</span><strong>@(detail.Project.OverallMaturity?.ToString("0.0") ?? "—")</strong></li>
+                <li><span>Members</span><strong>@(detail.Project.TotalMemberSize?.ToString("N0") ?? "—")</strong></li>
+                <li><span>Last activity</span><strong>@FormatDate(detail.Project.LastActivityAt)</strong></li>
+                <li><span>Business unit</span><strong>@(detail.Project.BusinessUnitName ?? "—")</strong></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>Module scores</h3>
+            <ul class="metric-list">
+                @foreach (var score in detail.Scores.OrderBy(s => s.ModuleKey))
+                {
+                    <li>
+                        <span>@(ModuleKeys.ShortLabels.TryGetValue(score.ModuleKey, out var label) ? label : score.ModuleKey)</span>
+                        <strong><span class="maturity maturity-@score.Level">@score.Level</span></strong>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <h3>Active services</h3>
+            <ul class="metric-list">
+                @foreach (var service in detail.Services.Where(s => s.Status.Equals("active", StringComparison.OrdinalIgnoreCase)))
+                {
+                    <li><span>@service.Service</span><strong>@service.Status</strong></li>
+                }
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>Evidence tables</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Records</th>
+                            <th>Users</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in detail.Evidence.Take(25))
+                        {
+                            <tr>
+                                <td>@row.TableKey</td>
+                                <td>@row.RecordCount.ToString("N0")</td>
+                                <td>@row.DistinctUsers</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string ProjectId { get; set; } = string.Empty;
+
+    private ProjectDetailView? detail;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await Session.GetCurrentUserAsync();
+        detail = await Dashboard.GetProjectDetailAsync(user.Id, ProjectId);
+        if (detail is null)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private static string FormatDate(DateTime? value) =>
+        value?.ToLocalTime().ToString("yyyy-MM-dd") ?? "—";
+}

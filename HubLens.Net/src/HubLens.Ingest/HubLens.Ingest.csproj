@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>HubLens.Ingest</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HubLens.Core\HubLens.Core.csproj" />
+    <ProjectReference Include="..\HubLens.Data\HubLens.Data.csproj" />
+  </ItemGroup>
+</Project>

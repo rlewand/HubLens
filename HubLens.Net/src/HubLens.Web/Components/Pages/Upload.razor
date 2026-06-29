@@ -1,0 +1,69 @@
+@page "/upload"
+@rendermode InteractiveServer
+@inject Ingest.IngestService IngestService
+@inject UserSession Session
+@inject NavigationManager Navigation
+
+<PageTitle>Data Upload - HubLens</PageTitle>
+
+<div class="page-header">
+    <h1>Import Data Connector export</h1>
+    <p>Select a ZIP archive exported from Autodesk ACC Data Connector.</p>
+</div>
+
+<div class="card">
+    <InputFile OnChange="OnFileSelected" accept=".zip" disabled="@isImporting" />
+    <div class="toolbar" style="margin-top: 1rem;">
+        <button disabled="@(selectedFile is null || isImporting)" @onclick="ImportAsync">
+            @(isImporting ? "Importing…" : "Import and analyze")
+        </button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <p class="status success">@message</p>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(error))
+    {
+        <p class="status error">@error</p>
+    }
+</div>
+
+@code {
+    private IBrowserFile? selectedFile;
+    private bool isImporting;
+    private string? message;
+    private string? error;
+
+    private void OnFileSelected(InputFileChangeEventArgs args) => selectedFile = args.File;
+
+    private async Task ImportAsync()
+    {
+        if (selectedFile is null)
+        {
+            return;
+        }
+
+        isImporting = true;
+        message = null;
+        error = null;
+
+        try
+        {
+            await using var stream = selectedFile.OpenReadStream(maxAllowedSize: 2L * 1024 * 1024 * 1024);
+            var user = await Session.GetCurrentUserAsync();
+            var batch = await IngestService.ImportZipAsync(user.Id, stream);
+            message = $"Import completed — {batch.ProjectCount:N0} projects loaded.";
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            isImporting = false;
+        }
+    }
+}

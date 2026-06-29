@@ -1,0 +1,119 @@
+@page "/"
+@rendermode InteractiveServer
+@inject DashboardService Dashboard
+@inject UserSession Session
+@inject NavigationManager Navigation
+
+<PageTitle>Dashboard - HubLens</PageTitle>
+
+<div class="page-header">
+    <h1>Project portfolio</h1>
+    <p>
+        @if (batch is not null)
+        {
+            <span>@batch.AccountName · @batch.ProjectCount.ToString("N0") projects · imported @batch.CompletedAt?.ToLocalTime().ToString("g")</span>
+        }
+        else
+        {
+            <span>No completed import yet.</span>
+        }
+    </p>
+</div>
+
+@if (latestAttempt?.Status == ImportStatus.Failed && latestAttempt.Id != batch?.Id)
+{
+    <div class="card warn">
+        <strong>Latest import failed.</strong>
+        <div>@latestAttempt.ErrorMessage</div>
+    </div>
+}
+
+@if (batch is null)
+{
+    <div class="card">
+        <p>Import your ACC Data Connector ZIP export to generate the maturity dashboard.</p>
+        <a class="button" href="/upload">Go to Data Upload</a>
+    </div>
+}
+else
+{
+    <div class="toolbar">
+        <input type="search" placeholder="Search projects…" @bind="search" @bind:event="oninput" />
+        <select @bind="statusFilter">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="all">All</option>
+        </select>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Members</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Overall</th>
+                    @foreach (var module in ModuleKeys.All)
+                    {
+                        <th>@(ModuleKeys.ShortLabels[module])</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in FilteredRows)
+                {
+                    <tr style="cursor:pointer" @onclick="() => OpenProject(project.Id)">
+                        <td>@project.Name</td>
+                        <td>@project.Status</td>
+                        <td>@(project.TotalMemberSize?.ToString("N0") ?? "—")</td>
+                        <td>@FormatDate(project.StartDate)</td>
+                        <td>@FormatDate(project.EndDate)</td>
+                        <td>@(project.OverallMaturity?.ToString("0.0") ?? "—")</td>
+                        @foreach (var module in ModuleKeys.All)
+                        {
+                            <td><span class="maturity maturity-@project.ModuleLevels[module]">@project.ModuleLevels[module]</span></td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private ImportBatch? batch;
+    private ImportBatch? latestAttempt;
+    private IReadOnlyList<ProjectRowView> rows = [];
+    private string search = string.Empty;
+    private string statusFilter = "active";
+
+    private IEnumerable<ProjectRowView> FilteredRows => rows
+        .Where(p => statusFilter switch
+        {
+            "active" => string.Equals(p.Status, "active", StringComparison.OrdinalIgnoreCase),
+            "inactive" => !string.Equals(p.Status, "active", StringComparison.OrdinalIgnoreCase),
+            _ => true,
+        })
+        .Where(p => string.IsNullOrWhiteSpace(search)
+            || p.Name.Contains(search, StringComparison.OrdinalIgnoreCase)
+            || (p.JobNumber?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await Session.GetCurrentUserAsync();
+        batch = await Dashboard.GetLatestCompletedBatchAsync(user.Id);
+        latestAttempt = await Dashboard.GetLatestAttemptAsync(user.Id);
+        if (batch is not null)
+        {
+            rows = await Dashboard.GetProjectRowsAsync(batch.Id);
+        }
+    }
+
+    private void OpenProject(string projectId) => Navigation.NavigateTo($"/projects/{projectId}");
+
+    private static string FormatDate(DateTime? value) =>
+        value?.ToLocalTime().ToString("yyyy-MM-dd") ?? "—";
+}

@@ -1,0 +1,39 @@
+{
+  "Version": 1,
+  "Hash": "VhfXw0xphAXcTAFSaOcZ8mPpIfKxLtqfFG76YuZUXq0=",
+  "Source": "HubLens",
+  "BasePath": "_content/HubLens",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "HubLens\\wwwroot",
+      "Source": "HubLens",
+      "ContentRoot": "C:\\Cursor\\HubLens\\HubLens.Net\\src\\HubLens.Web\\wwwroot\\",
+      "BasePath": "_content/HubLens",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Cursor\\HubLens\\HubLens.Net\\src\\HubLens.Web\\wwwroot\\app.css",
+      "SourceId": "HubLens",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Cursor\\HubLens\\HubLens.Net\\src\\HubLens.Web\\wwwroot\\",
+      "BasePath": "_content/HubLens",
+      "RelativePath": "app.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\app.css"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\bin\Debug\net8.0\config\maturity-rules.yaml
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\bin\Debug\net8.0\HubLens.Core.deps.json
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\bin\Debug\net8.0\HubLens.Core.dll
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\bin\Debug\net8.0\HubLens.Core.pdb
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.csproj.AssemblyReference.cache
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.AssemblyInfoInputs.cache
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.AssemblyInfo.cs
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.csproj.CoreCompileInputs.cache
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.sourcelink.json
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.dll
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\refint\HubLens.Core.dll
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\HubLens.Core.pdb
+C:\Cursor\HubLens\HubLens.Net\src\HubLens.Core\obj\Debug\net8.0\ref\HubLens.Core.dll

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>HubLens.Web</RootNamespace>
+    <AssemblyName>HubLens</AssemblyName>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HubLens.Core\HubLens.Core.csproj" />
+    <ProjectReference Include="..\HubLens.Data\HubLens.Data.csproj" />
+    <ProjectReference Include="..\HubLens.Ingest\HubLens.Ingest.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\config\maturity-rules.yaml" Link="config\maturity-rules.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

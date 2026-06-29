@@ -1,0 +1,14 @@
+@inherits LayoutComponentBase
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">HubLens</div>
+        <nav>
+            <NavLink href="/" Match="NavLinkMatch.All">Dashboard</NavLink>
+            <NavLink href="/upload">Data Upload</NavLink>
+        </nav>
+    </aside>
+    <main class="content">
+        @Body
+    </main>
+</div>

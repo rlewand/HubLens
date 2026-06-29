@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Cursor\\HubLens\\HubLens.Net\\src\\HubLens.Web\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.HubLens.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.HubLens.props",
+      "PackagePath": "build\\HubLens.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.HubLens.props",
+      "PackagePath": "buildMultiTargeting\\HubLens.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.HubLens.props",
+      "PackagePath": "buildTransitive\\HubLens.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

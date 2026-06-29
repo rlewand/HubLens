@@ -1,0 +1,147 @@
+modules:
+  docs:
+    display_name: "Docs / Document Management"
+    enabled_from: ["documentManagement", "docs"]
+    evidence_tables:
+      - sheets_sheets
+      - transmittals_workflow_transmittals
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 10
+        min_users: 3
+        max_days_since_activity: 90
+      optimized:
+        min_records: 100
+        min_users: 5
+        min_related_tables: 2
+
+  build:
+    display_name: "Build / Project Management"
+    enabled_from: ["projectManagement", "build"]
+    evidence_tables:
+      - rfis_rfis
+      - issues_issues
+      - issuesbim360_issues
+      - submittalsacc_items
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 25
+        min_users: 5
+        max_days_since_activity: 60
+      optimized:
+        min_records: 200
+        min_users: 10
+        min_related_tables: 3
+
+  cost:
+    display_name: "Cost Management"
+    enabled_from: ["costManagement", "cost"]
+    evidence_tables:
+      - cost_budgets
+      - cost_change_orders
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 5
+        min_users: 2
+        max_days_since_activity: 90
+      optimized:
+        min_records: 50
+        min_users: 5
+        min_related_tables: 2
+
+  design_collaboration:
+    display_name: "Design Collaboration"
+    enabled_from: ["designCollaboration"]
+    evidence_tables:
+      - clashes_assigned_clash_group
+      - clashes_clash_test
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 5
+        min_users: 2
+        max_days_since_activity: 90
+      optimized:
+        min_records: 25
+        min_users: 5
+        min_related_tables: 1
+
+  model_coordination:
+    display_name: "Model Coordination"
+    enabled_from: ["modelCoordination"]
+    evidence_tables:
+      - clashes_assigned_clash_group
+      - issues_issues
+      - issuesbim360_issues
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 10
+        min_users: 3
+        max_days_since_activity: 90
+      optimized:
+        min_records: 50
+        min_users: 5
+        min_related_tables: 2
+
+  field:
+    display_name: "Field Management"
+    enabled_from: ["fieldManagement", "field"]
+    evidence_tables:
+      - forms_forms
+      - dailylogs_daily_logs
+      - checklists_checklists
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 10
+        min_users: 3
+        max_days_since_activity: 60
+      optimized:
+        min_records: 75
+        min_users: 8
+        min_related_tables: 2
+
+  takeoff:
+    display_name: "Takeoff / Quantification"
+    enabled_from: ["quantification", "takeoff"]
+    evidence_tables:
+      - takeoff_takeoff_items
+      - takeoff_packages
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 5
+        min_users: 2
+        max_days_since_activity: 90
+      optimized:
+        min_records: 30
+        min_users: 4
+        min_related_tables: 2
+
+  assets:
+    display_name: "Assets"
+    enabled_from: ["assets"]
+    evidence_tables:
+      - assets_assets
+    thresholds:
+      adopted:
+        min_records: 1
+      active:
+        min_records: 10
+        min_users: 2
+        max_days_since_activity: 90
+      optimized:
+        min_records: 100
+        min_users: 5
+        min_related_tables: 1
